@@ -52,8 +52,8 @@ local-ai-agent/
 Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/local-ai-agent.git
-cd local-ai-agent
+git clone https://github.com/EdEsquivel/ai-agent.git
+cd ai-agent
 ```
 
 Create a virtual environment:
