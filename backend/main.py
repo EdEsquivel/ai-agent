@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from backend.schemas import ChatRequest
+from ollama import chat as ollama_chat
 
 app = FastAPI()
 
@@ -19,6 +20,16 @@ def health_check():
 @app.post("/chat")
 def chat(request: ChatRequest):
 
+    response = ollama_chat(
+        model="gemma4:12b",
+        messages=[
+            {
+                "role": "user",
+                "content": request.message
+            }
+        ]
+    )
+
     return {
-        "response": f"Received message: {request.message}"
+        "response": response["message"]["content"]
     }
