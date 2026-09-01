@@ -1,18 +1,4 @@
-from fastapi.testclient import TestClient
-
-from backend.main import app
-from backend.main import get_ai_service
-from backend.services.fake_ai_service import FakeAIService
-
-
-client = TestClient(app)
-
-
-def test_chat_endpoint():
-
-    app.dependency_overrides[get_ai_service] = (
-        lambda: FakeAIService()
-    )
+def test_chat_endpoint(client):
 
     response = client.post(
         "/chat",
@@ -29,9 +15,8 @@ def test_chat_endpoint():
         "FAKE RESPONSE: I received your message: 'Hola'"
     )
 
-    app.dependency_overrides.clear()
 
-def test_health_check():
+def test_health_check(client):
 
     response = client.get("/health")
 
@@ -40,3 +25,25 @@ def test_health_check():
     assert response.json() == {
         "status": "ok"
     }
+
+
+def test_chat_requires_message(client):
+
+    response = client.post(
+        "/chat",
+        json={}
+    )
+
+    assert response.status_code == 422
+
+
+def test_chat_rejects_empty_message(client):
+
+    response = client.post(
+        "/chat",
+        json={
+            "message": ""
+        }
+    )
+
+    assert response.status_code == 422
