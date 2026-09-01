@@ -1,8 +1,15 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
+
 from backend.schemas import ChatRequest
-from backend.services.ollama_service import generate_response
+from backend.services.ai_service import AIService
+from backend.services.ollama_service import OllamaService
+
 
 app = FastAPI()
+
+
+def get_ai_service() -> AIService:
+    return OllamaService()
 
 
 @app.get("/")
@@ -11,16 +18,21 @@ def root():
         "message": "AI Agent Service is running successfully!"
     }
 
+
 @app.get("/health")
 def health_check():
     return {
         "status": "ok"
     }
 
-@app.post("/chat")
-def chat(request: ChatRequest):
 
-    response = generate_response(request.message)
+@app.post("/chat")
+def chat(
+    request: ChatRequest,
+    ai_service: AIService = Depends(get_ai_service)
+):
+
+    response = ai_service.generate_response(request.message)
 
     return {
         "response": response
