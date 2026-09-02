@@ -47,3 +47,18 @@ def test_chat_rejects_empty_message(client):
     )
 
     assert response.status_code == 422
+
+def test_chat_stream(client):
+    response = client.post(
+        "/chat/stream",
+        json={
+            "message": "Hello"
+        }
+    )
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/plain")
+
+    assert response.text.strip() == (
+        "FAKE RESPONSE: I received your message: 'Hello'"
+    )

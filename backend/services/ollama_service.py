@@ -1,3 +1,5 @@
+from collections.abc import Iterator
+
 from ollama import Client
 
 from backend.config import settings
@@ -21,3 +23,18 @@ class OllamaService(AIService):
         )
 
         return response["message"]["content"]
+
+    def generate_response_stream(self, message: str) -> Iterator[str]:
+        response = self.client.chat(
+            model=settings.model_name,
+            messages=[
+                {
+                    "role": "user",
+                    "content": message
+                }
+            ],
+            stream=True
+        )
+
+        for chunk in response:
+            yield chunk["message"]["content"]
