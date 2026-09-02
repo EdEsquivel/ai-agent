@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from collections.abc import Iterator
+from collections.abc import AsyncIterator
 
 
 class AIService(ABC):
@@ -9,5 +9,8 @@ class AIService(ABC):
         pass
 
     @abstractmethod
-    def generate_response_stream(self, message: str) -> Iterator[str]:
+    async def generate_response_stream(
+        self,
+        message: str
+    ) -> AsyncIterator[str]:
         pass

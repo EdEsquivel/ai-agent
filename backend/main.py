@@ -40,7 +40,7 @@ def chat(
     }
 
 @app.post("/chat/stream")
-def chat_stream(
+async def chat_stream(
     request: ChatRequest,
     ai_service: AIService = Depends(get_ai_service)
 ):
