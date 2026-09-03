@@ -1,16 +1,24 @@
 from fastapi import Depends, FastAPI
 from fastapi.responses import StreamingResponse
 
+from backend.config import settings
 from backend.schemas import ChatRequest
 from backend.services.ai_service import AIService
+from backend.services.concurrency_limited_ai_service import (
+    ConcurrencyLimitedAIService
+)
 from backend.services.ollama_service import OllamaService
 
 
 app = FastAPI()
 
+ai_service = ConcurrencyLimitedAIService(
+    OllamaService(),
+    settings.max_concurrent_ai_requests
+)
 
 def get_ai_service() -> AIService:
-    return OllamaService()
+    return ai_service
 
 
 @app.get("/")

@@ -12,6 +12,7 @@ class OllamaService(AIService):
         self.client = Client(host=settings.ollama_host)
         self.async_client = AsyncClient(host=settings.ollama_host)
 
+
     def generate_response(self, message: str) -> str:
         response = self.client.chat(
             model=settings.model_name,
@@ -30,16 +31,16 @@ class OllamaService(AIService):
         message: str
     ) -> AsyncIterator[str]:
 
-        response = await self.async_client.chat(
-            model=settings.model_name,
-            messages=[
-                {
-                    "role": "user",
-                    "content": message
-                }
-            ],
-            stream=True
-        )
+            response = await self.async_client.chat(
+                model=settings.model_name,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": message
+                    }
+                ],
+                stream=True
+            )
 
-        async for chunk in response:
-            yield chunk["message"]["content"]
+            async for chunk in response:
+                yield chunk["message"]["content"]
