@@ -16,8 +16,16 @@ class ConcurrencyLimitedAIService(AIService):
             max_concurrent_requests
         )
 
-    def generate_response(self, message: str) -> str:
-        return self.service.generate_response(message)
+    async def generate_response(
+        self,
+        message: str
+    ) -> str:
+
+        async with self.semaphore:
+
+            return await self.service.generate_response(
+                message
+            )
 
     async def generate_response_stream(
         self,

@@ -36,12 +36,12 @@ def health_check():
 
 
 @app.post("/chat")
-def chat(
+async def chat(
     request: ChatRequest,
     ai_service: AIService = Depends(get_ai_service)
 ):
 
-    response = ai_service.generate_response(request.message)
+    response = await ai_service.generate_response(request.message)
 
     return {
         "response": response

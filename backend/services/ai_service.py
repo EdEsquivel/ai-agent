@@ -5,7 +5,10 @@ from collections.abc import AsyncIterator
 class AIService(ABC):
 
     @abstractmethod
-    def generate_response(self, message: str) -> str:
+    async def generate_response(
+        self,
+        message: str
+    ) -> str:
         pass
 
     @abstractmethod
