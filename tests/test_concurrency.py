@@ -12,7 +12,22 @@ class SlowFakeAIService(AIService):
         self.active_requests = 0
         self.max_active_requests = 0
 
-    def generate_response(self, message: str) -> str:
+    async def generate_response(
+        self,
+        message: str
+    ) -> str:
+
+        self.active_requests += 1
+
+        self.max_active_requests = max(
+            self.max_active_requests,
+            self.active_requests
+        )
+
+        await asyncio.sleep(0.1)
+
+        self.active_requests -= 1
+
         return "fake response"
 
     async def generate_response_stream(self, message: str):
@@ -50,6 +65,36 @@ def test_concurrency_limit():
             consume(),
             consume(),
             consume(),
+        )
+
+        assert fake_service.max_active_requests == 2
+
+    asyncio.run(run_test())
+
+
+def test_concurrency_limit_shared_between_methods():
+
+    async def run_test():
+
+        fake_service = SlowFakeAIService()
+
+        service = ConcurrencyLimitedAIService(
+            fake_service,
+            max_concurrent_requests=2
+        )
+
+        async def normal_request():
+            await service.generate_response("Hello")
+
+        async def stream_request():
+            async for _ in service.generate_response_stream("Hello"):
+                pass
+
+        await asyncio.gather(
+            normal_request(),
+            stream_request(),
+            normal_request(),
+            stream_request(),
         )
 
         assert fake_service.max_active_requests == 2
